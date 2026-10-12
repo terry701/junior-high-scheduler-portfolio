@@ -272,7 +272,63 @@ full
 
 ---
 
-# 8. 專案目前的限制
+# 8. 程式實作｜精選公開範例
+
+完整開發 repository 目前維持非公開，因為其中包含開發中的校務資料處理流程與不適合直接公開的原始資料。本作品集另外整理了三份經去識別化的代表性程式碼，讓審查者可以直接查看核心實作思路。
+
+## 1. CP-SAT Constraint Model
+
+👉 [查看 `constraint_model.py`](code_samples/constraint_model.py)
+
+這份公開範例呈現排課模型如何把課程節數、教師撞堂、教師不可排時段與固定課程等需求轉換成 OR-Tools CP-SAT constraint。
+
+重點不是單純「呼叫 Solver」，而是如何把原始校務需求形式化成可求解的限制條件。
+
+---
+
+## 2. Independent Semantic Oracle
+
+👉 [查看 `independent_semantic_oracle.py`](code_samples/independent_semantic_oracle.py)
+
+這份公開範例呈現獨立驗證器的核心概念：Validator 不直接把 Solver 的解析結果當作真相，而是從獨立來源重建 expected facts，再檢查課程節數、教師配置、教師撞堂與固定時段等條件。
+
+另外，無法被目前驗證器覆蓋的規則不會被偷偷當成 PASS，而會明確標成 `UNVERIFIED / INCOMPLETE`。
+
+這正是 A01 問題帶來的重要改變：
+
+> **Solver PASS + Validator PASS，只有在兩者的判斷依據真正獨立時，才更有證明力。**
+
+---
+
+## 3. Scenario / Counterexample Tests
+
+👉 [查看 `scenario_counterexample_tests.py`](code_samples/scenario_counterexample_tests.py)
+
+這份範例呈現我的測試方式並不只包含「應該成功」的案例，也會刻意建立必須失敗的反例，例如：
+
+- Hard target 高於可用容量時，模型必須拒絕
+- Hard constraint 不能被偷偷降低成較小目標
+- Soft 與 Hard rule 必須有不同結果
+- 零容量卻要求 Hard obligation 時必須失敗
+- Validator 必須保留原始 required target，而不能因實際只排出較少節數就一起把目標降級
+
+這些測試的目的，是驗證規則的真正語意，而不只是確認程式「有輸出」。
+
+---
+
+### 為什麼只公開精選程式碼？
+
+這三份檔案是從完整專案整理出的代表性公開版本，已移除真實教師、班級、學校名稱與其他校務資料。
+
+因此它們不是完整 production repository，也不宣稱包含所有規則；它們的用途是讓審查者可以直接檢查：
+
+**Constraint Modeling → Independent Validation → Counterexample Testing**
+
+這三個目前最能代表本專案工程思考的部分。
+
+---
+
+# 9. 專案目前的限制
 
 我不希望把仍在進行中的工作描述成已完成成果。
 
@@ -296,11 +352,11 @@ full
 
 > **已建立可運作的國中排課系統，並持續將重點由「產生課表」推進至「驗證課表是否可信」。**
 
-完整開發 repository 目前維持非公開；此公開作品集僅提供經整理且不涉及校務敏感資料的系統畫面、測試與開發證據。
+完整開發 repository 目前維持非公開；此公開作品集僅提供經整理且不涉及校務敏感資料的系統畫面、測試、開發證據與代表性程式碼。
 
 ---
 
-# 9. 下一步
+# 10. 下一步
 
 近期開發方向：
 
@@ -337,7 +393,7 @@ LLM-assisted Input
 
 ---
 
-# 10. 我從這個專案學到什麼？
+# 11. 我從這個專案學到什麼？
 
 一開始，我認為程式開發最重要的是：
 
